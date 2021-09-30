@@ -1,5 +1,5 @@
 exports.error = (error) => {
     return {
-        error : error
+        msg : error
     }
 }

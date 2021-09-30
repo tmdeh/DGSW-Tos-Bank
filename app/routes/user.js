@@ -12,6 +12,9 @@ router.post('/sign-up', upload.single('profile'), function(req, res, next) {
     if(result !== "OK") {
         res.status(401).send(result);
     }
+    else {
+        res.status(201).send(result);
+    }
 });
 
 router.post('/login', function(req, res, next) {
