@@ -1,9 +1,24 @@
 var express = require('express');
 var router = express.Router();
+const auth = require('../service/user/auth/IssuingTokens')
+// const userService = require('')
+const upload = require('../middleware/fileload')
+const signUp = require('../service/user/signUp')
 
-/* GET users listing. */
-router.get('/', function(req, res, next) {
-  res.send('respond with a resource');
+
+router.post('/sign-up', upload.single('profile'), function(req, res, next) {
+    const result = signUp(req);
+    console.log(result);
+    res.send(200);
 });
+
+router.post('/login', function(req, res, next) {
+    console.log(req.body);
+    res.send("aaaa");
+});
+
+router.post('/simple-login', (req, res, next) => {
+
+})
 
 module.exports = router;
