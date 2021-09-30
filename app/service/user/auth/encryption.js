@@ -1,7 +1,7 @@
-const encryption = (body) => { //암호화
-    return new Promise((resolve, reject) => {
-        resolve(crypto.createHash('sha512').update(body.password).digest('base64'));
-    })
+const crypto = require('crypto');
+
+const  encryption = (password) => { //암호화
+    return crypto.createHash('sha512').update(password).digest('base64');
 }
 
 

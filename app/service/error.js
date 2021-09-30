@@ -1,9 +1,5 @@
-const error = (error) => {
+exports.error = (error) => {
     return {
         error : error
-    }    
-}
-
-module.exports = {
-    error
+    }
 }

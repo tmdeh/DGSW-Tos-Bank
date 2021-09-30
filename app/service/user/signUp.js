@@ -1,14 +1,25 @@
-const signUpCheck = require('./auth/pwPatternCheck')
+const signUpCheck = require('./auth/signUpCheck')
 const userSql = require('../../model/DAL/userSql')
-const error = require('../error');
+// const error = require('../error');
 const encryption = require('./auth/encryption')
 
-const signUp = (body) => {
-    signUpCheck(body)
-    .then(encryption(body))
-    .then(userSql.idDuplicateCheck(body))
-    .then(userSql.createUser(body))
-    .catch(error.error())
+exports.signUp = (body, file) => {
+    const result = signUpCheck.signUpCheck(body)
+    if(result.msg !== "OK") {
+        console.log(result);
+        return result
+    }
+
+
+    body.password = encryption.encryption(body.password);
+
+    userSql.idDuplicateCheck(body)
+    .then(userSql.createUser(body, file))
+    .catch(error)
 }
 
-module.exports = signUp
+const error = (msg) => {
+    return {
+        msg : msg
+    }
+}

@@ -7,14 +7,15 @@ const signUp = require('../service/user/signUp')
 
 
 router.post('/sign-up', upload.single('profile'), function(req, res, next) {
-    const result = signUp(req);
-    console.log(result);
-    res.send(200);
+    console.log()
+    let result = signUp.signUp(req.body, req.file)
+    if(result !== "OK") {
+        res.status(401).send(result);
+    }
 });
 
 router.post('/login', function(req, res, next) {
     console.log(req.body);
-    res.send("aaaa");
 });
 
 router.post('/simple-login', (req, res, next) => {

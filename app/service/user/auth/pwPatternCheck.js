@@ -29,9 +29,9 @@ function checkPasswordPattern(str) {
 
 	if(!pattern1.test(str) || !pattern2.test(str) || !pattern3.test(str)) {
 		// alert("비밀번호는 8자리 이상 문자, 숫자, 특수문자로 구성하여야 합니다.");
-		return false;
-	} else {
 		return true;
+	} else {
+		return false;
 	}
 
 }

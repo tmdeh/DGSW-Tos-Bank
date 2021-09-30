@@ -6,20 +6,22 @@ const idDuplicateCheck = (body) => {
             if(err) {
                 reject(err);
             }
-            resolve()
+            resolve();
         })
     })
 }
 
-const createUser = (body) => {
+const createUser = (body, file) => {
     return new Promise((resolve, reject) => {
         db.query(`INSERT INTO tosbank(id, password, birthday, name, nickname, profile, simple_password, gender)
          values(?,?,?,?,?,?,?,?)`, 
-        [body.id, body], (err, result) => {
+        [body.id, body.password, body.birthday, body.name, body.nickname, file.filename, body.simplePassword,  body.gender], (err, result) => {
             if(err) {
                 reject(err);
             }
-            resolve()
+            resolve({
+                msg : "OK"
+            })
         })
     })
 }
