@@ -4,17 +4,11 @@ const auth = require('../service/user/auth/IssuingTokens')
 // const userService = require('')
 const upload = require('../middleware/fileload')
 const signUp = require('../service/user/signUp')
+const duplicateCheck = require('../service/user/duplicateCheck')
 
 
 router.post('/sign-up', upload.single('profile'), function(req, res, next) {
-    console.log()
-    let result = signUp.signUp(req.body, req.file)
-    if(result !== "OK") {
-        res.status(401).send(result);
-    }
-    else {
-        res.status(201).send(result);
-    }
+    signUp.signUp(req.body, req.file, res)
 });
 
 router.post('/login', function(req, res, next) {
@@ -23,6 +17,10 @@ router.post('/login', function(req, res, next) {
 
 router.post('/simple-login', (req, res, next) => {
 
+})
+
+router.get('/duplicate-check/:id', (req, res, neext) => {
+    duplicateCheck.check(req.params.id, res);
 })
 
 module.exports = router;

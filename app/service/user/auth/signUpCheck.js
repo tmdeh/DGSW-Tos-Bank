@@ -12,8 +12,8 @@ exports.signUpCheck = function(body) {
         return({msg : "아이디가 너무 길거나 짧습니다."});
     }
 
-    if(pwCheck.checkIdPattern(body.id)){
-        return({msg : "영문과 숫자가 포함되어야 합니다."});
+    if(!pwCheck.checkIdPattern(body.id)){
+        return({msg : "아이디에 영문과 숫자가 포함되어야 합니다."});
     }
 
     if(body.password.length < 8 || body.password > 13) {
