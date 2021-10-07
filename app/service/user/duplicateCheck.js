@@ -1,4 +1,4 @@
-const userSql = require('../../model/DAL/userSql')
+const userSql = require('../../DAL/userSql')
 
 
 exports.check = (id, res) => {
