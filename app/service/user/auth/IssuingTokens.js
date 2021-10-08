@@ -5,7 +5,7 @@ const secret = require('../../../secret/primary');
 exports.issue = (result) => {
     let user = {
         sub: result[0].id,
-        pk: result[0].user_pk,
+        salt : result[0].salt,
         iat: new Date().getTime() / 1000
     };
     let token = {

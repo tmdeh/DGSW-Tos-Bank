@@ -61,7 +61,7 @@ const insertSimplePassword = (body, simplePw) => {
 
 
 const loginQuery = async(body) => {
-    let sql = 'SELECT user_pk ,id, password FROM user WHERE id = ? AND password = ?'
+    let sql = 'SELECT id FROM user WHERE id = ? AND password = ?'
     let param = [body.id, body.password];
     let result = await executeQuery.executePreparedStatement(sql, param);
     return new Promise((resolve, reject) => {
@@ -81,11 +81,35 @@ const selectId = async(id) => {
     return salt[0].salt;
 }
 
+const selectSId = async(id) => {
+    let sql = `SELECT salt FROM simple_user WHERE user_id = ?`
+    let param = [id]
+    const salt = await executeQuery.executePreparedStatement(sql, param);
+    return salt[0].salt;
+}
+
+const simpleLogin = async(id, pw) => {
+    let sql = 'SELECT user_id FROM simple_user WHERE user_id = ? AND simple_password = ?'
+    let param = [id, pw];
+    let result = await executeQuery.executePreparedStatement(sql, param);
+    return new Promise((resolve, reject) => {
+        if(result.length == 0) {
+            reject({
+                msg : "아이디와 비밀번호가 일치하지 않습니다."
+            })
+        }
+        resolve({
+            msg : "OK"
+        });
+    })
+}
 
 
 module.exports = {
     idDuplicateCheck : idDuplicateCheck,
     createUser : createUser,
     loginQuery : loginQuery,
-    selectId : selectId
+    selectId : selectId,
+    selectSId : selectSId,
+    simpleLogin : simpleLogin
 }

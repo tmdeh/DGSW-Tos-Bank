@@ -4,7 +4,7 @@ const upload = require('../middleware/fileload');
 const signUp = require('../service/user/signUp');
 const login = require('../service/user/login');
 const duplicateCheck = require('../service/user/duplicateCheck');
-const tokendecode = require('../middleware/token');
+const tokendecode = require('../middleware/tokenDecode');
 
 
 router.post('/sign-up', upload.single('profile'), function(req, res, next) {

@@ -1,7 +1,5 @@
 const userSql = require('../../DAL/userSql');
 const encryption = require('./auth/encryption')
-const jwt = require('jsonwebtoken');
-const secret = require('../../secret/primary');
 const Token = require('./auth/IssuingTokens');
 
 exports.login = async(body, res) => {
@@ -22,25 +20,20 @@ exports.login = async(body, res) => {
     })
 }
 
-exports.simpleLogin = (res, pw, token) => {
-    
-}
+exports.simpleLogin = async(res, body, token) => {
+    let id = token.sub;
 
-// exports.login = (body, res) => {
-    
-//     body.password = encryption.encryption(body.password); //암호화
-//     userSql.loginQuery(body)
-//     .then(Token.issue(body))
-//     .then((token) => {
-//         res.status(201).json({
-//             loginToken : token
-//         })
-//     })
-//     .catch((msg) => {
-//         console.log(msg);
-//         res.status(401).json(msg);
-//     })
-// }
+    const salt = await userSql.selectSId(id);
+    const simplePw = await encryption.resolveHashedPassword(salt, body.simplePassword);
+
+    userSql.simpleLogin(id, simplePw)
+    .then((result) => {
+        res.status(201).json(result);
+    })
+    .catch((e) => {
+        res.status(401).json(e);
+    })
+}
 
 
 
