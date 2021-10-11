@@ -104,6 +104,23 @@ const simpleLogin = async(id, pw) => {
     })
 }
 
+const certification = async(body) => {
+    let sql = "SELECT * FROM user WHERE name = ? AND birthday = ?";
+    let param = [body.name, body.birthday];
+
+    let result = await executeQuery.executePreparedStatement(sql, param);
+    return new Promise((resolve, reject) => {
+        if(result.length == 0) {
+            reject({
+                msg : "일치하는 정보가 없습니다."
+            })
+        }
+        resolve({
+            msg : "OK"
+        })
+    })
+}
+
 
 module.exports = {
     idDuplicateCheck : idDuplicateCheck,
@@ -111,5 +128,6 @@ module.exports = {
     loginQuery : loginQuery,
     selectId : selectId,
     selectSId : selectSId,
-    simpleLogin : simpleLogin
+    simpleLogin : simpleLogin,
+    certification : certification
 }
