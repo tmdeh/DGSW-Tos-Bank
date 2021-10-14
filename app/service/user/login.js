@@ -3,9 +3,10 @@ const encryption = require('./auth/encryption')
 const Token = require('./auth/IssuingTokens');
 
 exports.login = async(body, res) => {
+    try{
+        const salt = await userSql.selectId(body.id);
+        const password = await encryption.resolveHashedPassword(salt, body.password);
     
-    const salt = await userSql.selectId(body.id);
-    const password = await encryption.resolveHashedPassword(salt, body.password);
 
     body.password = password;
 
@@ -18,6 +19,13 @@ exports.login = async(body, res) => {
         console.log(msg);
         res.status(401).json(msg);
     })
+    
+    }catch (e) {
+        res.status(401).json({
+            msg : e
+        })
+        return;
+    }
 }
 
 exports.simpleLogin = async(res, body, token) => {

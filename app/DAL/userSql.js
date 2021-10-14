@@ -22,24 +22,14 @@ const idDuplicateCheck = (id) => {
 }
 
 
-const createUser = (body, file, pw, simplePw) => {
-    return new Promise((resolve, reject) => {
-        let sql1 = 'INSERT INTO user(id, password, birthday, name, nickname, profile, gender, salt) values(?,?,?,?,?,?,?,?);'
-        // let sql2 = "INSERT INTO simple_user(user_id, simple_password, salt) values(?, ?, ?);"
-        let url = "images/user/" + file.filename; //유저 프로필 url
-        let param1 = [body.id, pw.password, body.birthday, body.name, body.nickName, url, body.gender, pw.salt]
-        // let param2 = [body.id, simplePw.password, simplePw.salt];
+const createUser = async(body, file, pw) => {
+    let sql = 'INSERT INTO user(id, password, birthday, name, nickname, profile, gender, salt) values(?,?,?,?,?,?,?,?);'
+    let url = "images/user/" + file.filename; //유저 프로필 url
 
-        // sql2 = mysql.format(sql2, param2);
-        mysql.query(sql1, param1, (err, result) => {
-            if(err) {
-                reject({
-                    msg : err
-                })
-            }
-            resolve(body, simplePw);
-        })
-    }).then(insertSimplePassword(body, simplePw))
+    let param = [body.id, pw.password, body.birthday, body.name, body.nickName, url, body.gender, pw.salt]
+    
+    let userPk  = await executeQuery.executePreparedStatement(sql, param);;
+    return userPk.insertId;
 }
 
 const insertSimplePassword = (body, simplePw) => {
@@ -85,6 +75,9 @@ const selectSId = async(id) => {
     let sql = `SELECT salt FROM simple_user WHERE user_id = ?`
     let param = [id]
     const salt = await executeQuery.executePreparedStatement(sql, param);
+    if(salt.length == 0) {
+        throw "찾을 수 없습니다."
+    }
     return salt[0].salt;
 }
 
@@ -129,5 +122,6 @@ module.exports = {
     selectId : selectId,
     selectSId : selectSId,
     simpleLogin : simpleLogin,
-    certification : certification
+    certification : certification,
+    insertSimplePassword
 }

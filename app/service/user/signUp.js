@@ -4,22 +4,20 @@ const encryption = require('./auth/encryption')
 
 
 exports.signUp = async(body, file, res) => {
-    const result = signUpCheck.signUpCheck(body) //id, password 체크
-    if(result.msg !== "OK") { //id나 password가 만족하지 못했을테
-        res.status(401).json(result);
-        return
-    }
+    try{
+        signUpCheck.signUpCheck(body) //id, password 체크
+        let pw = await encryption.createHashedPassword(body.password);
+        let simplePw = await encryption.createHashedPassword(body.simplePassword);
+        await userSql.createUser(body, file, pw);
 
-    const pw = await encryption.createHashedPassword(body.password);
-    const simplePw = await encryption.createHashedPassword(body.simplePassword);
-    
-    userSql.createUser(body, file, pw, simplePw)
-    .then(() => {
+        await userSql.insertSimplePassword(body, simplePw);
+
         res.status(201).json({
             msg : "OK"
         })
-    })
-    .catch((err) => {
-        res.status(401).json({ msg : err.msg.code});
-    })
+    }catch(e) {
+        console.log(e)
+        res.status(401).json(e)
+        return
+    }
 }
