@@ -13,7 +13,7 @@ exports.login = async(body, res) => {
 
     userSql.loginQuery(body)
     .then((result) => {
-        res.status(201).json(Token.issue(result));
+        res.status(200).json(Token.issue(result));
     })
     .catch((msg) => {
         console.log(msg);
