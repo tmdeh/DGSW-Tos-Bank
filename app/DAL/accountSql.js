@@ -5,7 +5,7 @@ exports.insertAccount = async(body) => {
     while(true) {
         number = accountNumber.createAccount();
     
-        let result = await executeQuery.executePreparedStatement("SELECT * FROM account WHERE account_number = ?", [number]);
+        let result = await executeQuery.executePreparedStatement("SELECT * FROM account WHERE account_number = ?", [number]); //중복 제거
         if(result.length == 0) {
             break;
         }
@@ -76,4 +76,39 @@ exports.passwordCheck = async(sendAccountNumber, password) => {
     }
 
     return;
+}
+
+exports.transactionInsert = async(body) => {
+    let sql = "SELECT user_fk FROM account WHERE account_number = ? OR account_number = ?" ;
+    let param = [body.sendAccountNumber, body.receiveAccountNumber];
+
+    let result = await executeQuery.executePreparedStatement(sql, param);
+
+    let sender = result[0].user_fk;
+    let receiver = result[1].user_fk;
+
+    sql = "INSERT INTO transaction(receiver, sender, money, sender_bank, receiver_bank) VALUES(?,?,?,'toss','toss')";
+    param = [receiver, sender, body.money];
+
+    await executeQuery.executePreparedStatement(sql, param);
+}
+
+exports.isExistAccount = async(sendAccountNumber, receiveAccountNumber) => {
+    let sql = "SELECT * FROM account WHERE account_number = ?";
+    let param = [sendAccountNumber];
+
+    let result_1 = await executeQuery.executePreparedStatement(sql, param);
+
+    if(result_1.length == 0) {
+        throw "sender의 계좌가 존재하지 않습니다.";
+    }
+
+    sql = "SELECT * FROM account WHERE account_number = ?";
+    param = [receiveAccountNumber];
+
+    let result_2 = await executeQuery.executePreparedStatement(sql, param);
+
+    if(result_2.length == 0) {
+        throw "receiver의 계좌가 존재하지 않습니다.";
+    }
 }

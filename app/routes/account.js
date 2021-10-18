@@ -21,7 +21,7 @@ router.get('/add', (req, res) => { //타은행 계좌 조회
 })
 
 router.put('/money', (req, res) => { //송금, 가져오기
-    if(req.body.bankName == 'tos') {
+    if(req.body.bankName == 'toss') {
         importMoney.get(req.body, res);
     }
 })

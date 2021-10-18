@@ -17,5 +17,3 @@ exports.issue = (result) => {
     })
     return(token);
 }
-
-

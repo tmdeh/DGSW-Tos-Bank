@@ -17,7 +17,9 @@ exports.signUp = async(body, file, res) => {
         })
     }catch(e) {
         console.log(e)
-        res.status(401).json(e)
+        res.status(401).json({
+            msg : e
+        })
         return
     }
 }

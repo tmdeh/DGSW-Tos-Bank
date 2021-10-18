@@ -7,7 +7,7 @@ exports.tosBankSearch = async(userId, res) => {
         // console.log(query);
         for(i in query) {
             let tmp = {};
-            tmp.bankName = "tos";
+            tmp.bankName = "toss";
             tmp.accountNumber = query[i].account_number;
             tmp.money = query[i].money;
             result[i] = tmp; 
