@@ -16,7 +16,7 @@ description: 토스 뱅크 api
 
 계좌에 대한 api
 
-{% content-ref url="broken-reference" %}
-[Broken link](broken-reference)
+{% content-ref url="page-1/account.md" %}
+[account.md](page-1/account.md)
 {% endcontent-ref %}
 
