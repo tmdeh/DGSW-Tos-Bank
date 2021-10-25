@@ -14,10 +14,9 @@ exports.create = async(body, res) => {
 
         body.password = await auth.createHashedPassword(body.password);
         
-        body.userPk = await accountSql.selectUserPk(body.userId);
+        // body.userPk = await accountSql.selectUserPk(body.userId);
     
         await accountSql.insertAccount(body);
-
         res.status(201).json({
             msg : "OK"
         })

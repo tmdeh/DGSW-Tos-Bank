@@ -1,29 +1,35 @@
 const executeQuery = require('../model/executeQuery');
 const accountNumber = require('../service/account/AccountNumber');
 
-exports.insertAccount = async(body) => {
+exports.insertAccount = async(body) => { //계좌 생성
     while(true) {
         number = accountNumber.createAccount();
-    
+        
         let result = await executeQuery.executePreparedStatement("SELECT * FROM account WHERE account_number = ?", [number]); //중복 제거
         if(result.length == 0) {
             break;
         }
     }
-    let sql = "INSERT INTO account(user_fk, name, password, money, salt, account_number) values(?,?,?,?,?,?)";
-    let param = [body.userPk, body.name, body.password.password, 10000, body.password.salt, number];
+    let sql = "INSERT INTO account(id, name, password, money, salt, account_number) values(?,?,?,?,?,?)";
+    let param = [body.userId, body.name, body.password.password, 10000, body.password.salt, number];
+    await executeQuery.executePreparedStatement(sql, param);
+    await insertList(body.userId, number);
+}
+const insertList = async(userId, accountNumber) => { //계좌 리스트에 추가
+    let sql = "INSERT INTO account_list(account, id) values(?,?)";
+    let param = [accountNumber, userId];
     await executeQuery.executePreparedStatement(sql, param);
 }
 
-exports.selectUserPk = async(userId) => {
-    let sql = "SELECT user_pk FROM user WHERE id = ?";
-    let result = await executeQuery.executePreparedStatement(sql, [userId]);
+// exports.selectUserPk = async(userId) => {
+//     let sql = "SELECT user_pk FROM user WHERE id = ?";
+//     let result = await executeQuery.executePreparedStatement(sql, [userId]);
 
-    return result[0].user_pk;
-}
+//     return result[0].user_pk;
+// }
 
 exports.selectAccount = async(userId) => {
-    let sql = "SELECT * FROM account WHERE user_fk = (SELECT user_pk FROM user WHERE id = ?);";
+    let sql = "SELECT * FROM account WHERE id = ?";
     let result = await executeQuery.executePreparedStatement(sql, [userId]);
     return result;
 }
@@ -79,17 +85,8 @@ exports.passwordCheck = async(sendAccountNumber, password) => {
 }
 
 exports.transactionInsert = async(body) => {
-    let sql = "SELECT user_fk FROM account WHERE account_number = ? OR account_number = ?" ;
-    let param = [body.sendAccountNumber, body.receiveAccountNumber];
-
-    let result = await executeQuery.executePreparedStatement(sql, param);
-
-    let sender = result[0].user_fk;
-    let receiver = result[1].user_fk;
-
-    sql = "INSERT INTO transaction(receiver, sender, money, sender_bank, receiver_bank) VALUES(?,?,?,'toss','toss)";
-    param = [receiver, sender, body.money];
-
+    let sql = "INSERT INTO transaction(receiver, sender, money, sender_bank, receiver_bank, sender_account, receiver_account) VALUES(?,?,?,'toss','toss', ?, ?)";
+    let param = [body.userId, body.userId, body.money, body.sendAccountNumber, body.receiveAccountNumber];
     await executeQuery.executePreparedStatement(sql, param);
 }
 
@@ -112,3 +109,9 @@ exports.isExistAccount = async(sendAccountNumber, receiveAccountNumber) => {
         throw "receiver의 계좌가 존재하지 않습니다.";
     }
 }
+
+
+exports.delete = (accountNumber) => {
+
+}
+

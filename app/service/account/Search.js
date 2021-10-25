@@ -3,7 +3,6 @@ const accountSql = require('../../DAL/accountSql');
 exports.tosBankSearch = async(userId, res) => {
     try {
         let query = await accountSql.selectAccount(userId);
-        console.log(query)
         let result = [];
         for(i in query) {
             let tmp = {};

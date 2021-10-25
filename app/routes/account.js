@@ -20,14 +20,13 @@ router.get('/add', (req, res) => { //타은행 계좌 조회
 
 })
 
-router.put('/money', (req, res) => { //송금, 가져오기
-    if(req.body.bankName == 'toss') {
+router.put('/money', decode, (req, res) => { //송금, 가져오기
+    if(req.body.bankName == 'toss') { //가져오기
+        req.body.userId = req.token.sub;
         importMoney.get(req.body, res);
     }
 })
 
-router.delete('/', (req, res) => { //계좌 삭제
-    
-})
+router.delete('/',)
 
 module.exports = router;

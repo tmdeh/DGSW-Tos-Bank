@@ -1,7 +1,7 @@
 const executeQuery = require('../model/executeQuery');
 const mysql = require('../model/mysql');
 
-const idDuplicateCheck = (id) => {
+exports.idDuplicateCheck = (id) => {
     return new Promise((resolve, reject) => {
         mysql.query(`SELECT id FROM user WHERE id = ?`, [id], (err, result) => {
             if(err){
@@ -22,7 +22,7 @@ const idDuplicateCheck = (id) => {
 }
 
 
-const createUser = async(body, file, pw) => {
+exports.createUser = async(body, file, pw) => {
     let sql = 'INSERT INTO user(id, password, birthday, name, nickname, profile, gender, salt, phone_number) values(?,?,?,?,?,?,?,?,?);'
     let url = "images/user/" + file.filename; //유저 프로필 url
 
@@ -36,7 +36,7 @@ const createUser = async(body, file, pw) => {
     return result[0];
 }
 
-const insertSimplePassword = (body, simplePw) => {
+exports.insertSimplePassword = (body, simplePw) => {
     return new Promise((resolve, reject) => {
         mysql.query("INSERT INTO simple_user(user_id, simple_password, salt) values(?, ?, ?);", 
         [body.id, simplePw.password, simplePw.salt], (err, result) => {
@@ -54,28 +54,24 @@ const insertSimplePassword = (body, simplePw) => {
 
 
 
-const loginQuery = async(body) => {
+exports.loginQuery = async(body) => {
     let sql = 'SELECT id FROM user WHERE id = ? AND password = ?'
     let param = [body.id, body.password];
     let result = await executeQuery.executePreparedStatement(sql, param);
-    return new Promise((resolve, reject) => {
-        if(result.length == 0) {
-            reject({
-                msg : "아이디와 비밀번호가 일치하지 않습니다."
-            })
-        }
-        resolve(result);
-    })
+    if(result.length == 0) {
+        throw "아이디와 비밀번호가 일치하지 않습니다.";
+    }
+    return result
 }
 
-const selectId = async(id) => {
+exports.selectId = async(id) => {
     let sql = `SELECT salt FROM user WHERE id = ?`
     let param = [id]
     const salt = await executeQuery.executePreparedStatement(sql, param);
     return salt[0].salt;
 }
 
-const selectSId = async(id) => {
+exports.selectSId = async(id) => {
     let sql = `SELECT salt FROM simple_user WHERE user_id = ?`
     let param = [id]
     const salt = await executeQuery.executePreparedStatement(sql, param);
@@ -85,47 +81,29 @@ const selectSId = async(id) => {
     return salt[0].salt;
 }
 
-const simpleLogin = async(id, pw) => {
+exports.simpleLogin = async(id, pw) => {
     let sql = 'SELECT user_id FROM simple_user WHERE user_id = ? AND simple_password = ?'
     let param = [id, pw];
     let result = await executeQuery.executePreparedStatement(sql, param);
-    return new Promise((resolve, reject) => {
-        if(result.length == 0) {
-            reject({
-                msg : "아이디와 비밀번호가 일치하지 않습니다."
-            })
-        }
-        resolve({
-            msg : "OK"
-        });
-    })
+    if(result.length == 0) {
+        throw "아이디와 비밀번호가 일치하지 않습니다.";
+    }
 }
 
-const certification = async(body) => {
+exports.certification = async(body) => {
     let sql = "SELECT * FROM user WHERE name = ? AND birthday = ?";
     let param = [body.name, body.birthday];
 
     let result = await executeQuery.executePreparedStatement(sql, param);
-    return new Promise((resolve, reject) => {
-        if(result.length == 0) {
-            reject({
-                msg : "일치하는 정보가 없습니다."
-            })
-        }
-        resolve({
-            msg : "OK"
-        })
-    })
+
+    if(result.length == 0) {
+        throw "일치하는 정보가 없습니다."
+    }
 }
 
+exports.getPhoneNumber = async(phoneNumber) => {
+    let sql = "SELECT * FROM user WHERE phone_number = ?";
+    let result = await executeQuery.executePreparedStatement(sql, [phoneNumber])
 
-module.exports = {
-    idDuplicateCheck : idDuplicateCheck,
-    createUser : createUser,
-    loginQuery : loginQuery,
-    selectId : selectId,
-    selectSId : selectSId,
-    simpleLogin : simpleLogin,
-    certification : certification,
-    insertSimplePassword
+    return result
 }

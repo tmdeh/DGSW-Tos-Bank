@@ -1,9 +1,10 @@
 module.exports.init=(io)=>{ 
     console.log("소켓 시작");
-
     io.on('connection', (socket) => {
-        console.log("연결성공");
+        console.log("연결 성공" + socket.request);
 
-        io.emit('test', JSON.stringify({msg:'Hello'}))
+        socket.on('test', (index) => {
+            console.log(index);
+        })
     })
 }

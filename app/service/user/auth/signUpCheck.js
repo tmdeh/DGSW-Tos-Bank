@@ -1,5 +1,5 @@
 const pwCheck = require('./PwPatternCheck.js')
-
+const userSql = require('../../../DAL/UserSql')
 
 exports.signUpCheck = function(body) {
         
@@ -30,4 +30,11 @@ exports.signUpCheck = function(body) {
         throw "간단 비밀번호가 너무 짧거나 깁니다."
     }
     
+}
+
+exports.phoneNumberDuplicateCHeck = async(phoneNumber) => {
+   let result = await userSql.getPhoneNumber(phoneNumber);
+   if(result.length > 0) {
+       throw "전화번호가 중복 되었습니다."
+   }
 }

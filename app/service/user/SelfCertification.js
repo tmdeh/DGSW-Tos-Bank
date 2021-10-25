@@ -1,11 +1,14 @@
 const userSql = require('../../DAL/UserSql');
 
-exports.certification = (body, res) => {
-    userSql.certification(body)
-    .then((result) => {
-        res.status(201).json(result);
-    })
-    .catch((e) => {
-        res.status(401).json(e);
-    })
+exports.certification = async(body, res) => {
+    try {
+        await userSql.certification(body)
+        res.status(201).json({
+            msg : "OK"
+        });
+    }catch (e) {
+        res.status(401).json({
+            msg : e
+        });
+    }
 }

@@ -1,4 +1,4 @@
-const profileSql = require('../../DAL/profileSql');
+const profileSql = require('../../DAL/ProfileSql');
 
 exports.get = async(body, res) => {
     let result = await profileSql.searchUser(body.userId);
