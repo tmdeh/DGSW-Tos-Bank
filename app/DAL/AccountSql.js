@@ -13,11 +13,11 @@ exports.insertAccount = async(body) => { //계좌 생성
     let sql = "INSERT INTO account(id, name, password, money, salt, account_number) values(?,?,?,?,?,?)";
     let param = [body.userId, body.name, body.password.password, 10000, body.password.salt, number];
     await executeQuery.executePreparedStatement(sql, param);
-    await insertList(body.userId, number);
+    await insertList(body.userId, number, body.name);
 }
-const insertList = async(userId, accountNumber) => { //계좌 리스트에 추가
-    let sql = "INSERT INTO account_list(account, id) values(?,?)";
-    let param = [accountNumber, userId];
+const insertList = async(userId, accountNumber, name) => { //계좌 리스트에 추가
+    let sql = "INSERT INTO account_list(account, id, name) values(?,?, ?)";
+    let param = [accountNumber, userId, name];
     await executeQuery.executePreparedStatement(sql, param);
 }
 
@@ -115,3 +115,9 @@ exports.delete = (accountNumber) => {
 
 }
 
+exports.selectPhoneNumber = async(phoneNumber) => {
+    let sql = "SELECT a.name, a.money, a.account_number FROM account AS a JOIN user as u ON a.id=u.id AND u.phone_number = ?";
+    let result = await executeQuery.executePreparedStatement(sql, [phoneNumber]);
+    
+    return result
+}

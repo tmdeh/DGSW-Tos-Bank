@@ -1,6 +1,6 @@
 var express = require('express');
 const decode = require('../middleware/tokenDecode');
-const createAccount = require('../service/account/Create')
+const setAccount = require('../service/account/Set')
 const Search = require('../service/account/Search');
 const importMoney = require('../service/account/importMoney');
 var router = express.Router();
@@ -8,16 +8,22 @@ var router = express.Router();
 
 router.get('/', decode, (req, res) => { //계좌 조회
     const userId = req.token.sub;
-    Search.tosBankSearch(userId, res)
+    Search.tossBankSearch(userId, res)
 })
 
 router.post('/', decode, (req, res) => { //계좌 생성
     req.body.userId = req.token.sub;
-    createAccount.create(req.body, res);
+    setAccount.create(req.body, res);
 })
 
-router.get('/add', (req, res) => { //타은행 계좌 조회
+router.get('/add', decode, (req, res) => { //타은행 계좌 조회
+    req.body.userId = req.token.sub;
+    Search.add(req.body, res);
+})
 
+router.post('/confirm', decode, (req, res) => {
+    req.body.userId = req.token.sub;
+    setAccount.insert(req.body, res);
 })
 
 router.put('/money', decode, (req, res) => { //송금, 가져오기
@@ -28,5 +34,10 @@ router.put('/money', decode, (req, res) => { //송금, 가져오기
 })
 
 router.delete('/',)
+
+router.get('/:phoneNumber', (req,res) => {
+    const phoneNumber = req.params.phoneNumber;
+    Search.forAnotherBank(phoneNumber, res);
+})
 
 module.exports = router;

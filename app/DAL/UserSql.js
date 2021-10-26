@@ -65,9 +65,13 @@ exports.loginQuery = async(body) => {
 }
 
 exports.selectId = async(id) => {
+    console.log(id);
     let sql = `SELECT salt FROM user WHERE id = ?`
     let param = [id]
     const salt = await executeQuery.executePreparedStatement(sql, param);
+    if(salt.length == 0) {
+        throw "아이디를 찾을 수 없습니다."
+    }
     return salt[0].salt;
 }
 
@@ -106,4 +110,11 @@ exports.getPhoneNumber = async(phoneNumber) => {
     let result = await executeQuery.executePreparedStatement(sql, [phoneNumber])
 
     return result
+}
+
+exports.getId = async(userId) => {
+    let sql = "SELECT phone_number FROM user WHERE id = ?";
+    let result = await  executeQuery.executePreparedStatement(sql, [userId]);
+
+    return result[0].phone_number;
 }

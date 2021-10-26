@@ -10,6 +10,7 @@ exports.login = async(body, res) => {
         let result = await userSql.loginQuery(body);
         res.status(200).json(Token.issue(result))
     }catch (e) {
+        console.log(e);
         res.status(400).json({
             msg : e
         })
