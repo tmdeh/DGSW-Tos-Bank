@@ -27,5 +27,17 @@ exports.create = async(body, res) => {
 }
 
 exports.insert = async(body, res) => {
-    console.log(body);
+    try {
+        for(let i = 0; i < body.length; i++) {
+            await accountSql.insertList(body.userId, body[i].accountNumber);
+        }
+        res.status(201).json({
+            msg : "OK"
+        })
+    } catch (e) {
+        res.status(401).json({
+            msg : e
+        })
+    }
+    
 }

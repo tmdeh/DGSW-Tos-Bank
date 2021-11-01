@@ -33,7 +33,7 @@ exports.signUpCheck = function(body) {
 }
 
 exports.phoneNumberDuplicateCHeck = async(phoneNumber) => {
-   let result = await userSql.getPhoneNumber(phoneNumber);
+   let result = await userSql.getWithPhoneNumber(phoneNumber);
    if(result.length > 0) {
        throw "전화번호가 중복 되었습니다."
    }

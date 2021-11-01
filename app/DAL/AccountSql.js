@@ -13,20 +13,13 @@ exports.insertAccount = async(body) => { //계좌 생성
     let sql = "INSERT INTO account(id, name, password, money, salt, account_number) values(?,?,?,?,?,?)";
     let param = [body.userId, body.name, body.password.password, 10000, body.password.salt, number];
     await executeQuery.executePreparedStatement(sql, param);
-    await insertList(body.userId, number, body.name);
+    await insertList(body.userId, number);
 }
-const insertList = async(userId, accountNumber, name) => { //계좌 리스트에 추가
-    let sql = "INSERT INTO account_list(account, id, name) values(?,?, ?)";
-    let param = [accountNumber, userId, name];
+exports.insertList = async(userId, accountNumber) => { //계좌 리스트에 추가
+    let sql = "INSERT INTO account_list(account, id) values(?,?)";
+    let param = [accountNumber, userId];
     await executeQuery.executePreparedStatement(sql, param);
 }
-
-// exports.selectUserPk = async(userId) => {
-//     let sql = "SELECT user_pk FROM user WHERE id = ?";
-//     let result = await executeQuery.executePreparedStatement(sql, [userId]);
-
-//     return result[0].user_pk;
-// }
 
 exports.selectAccount = async(userId) => {
     let sql = "SELECT * FROM account WHERE id = ?";
