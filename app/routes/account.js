@@ -12,11 +12,6 @@ router.get('/', decode, (req, res) => { //계좌 조회
     Search.allBankSearch(userId, res)
 })
 
-router.get('/a', decode, (req, res) => { //계좌 조회
-    const userId = req.token.sub;
-    Search.allBankSearchtest(userId, res)
-})
-
 router.post('/', decode, (req, res) => { //계좌 생성
     req.body.userId = req.token.sub;
     setAccount.create(req.body, res);

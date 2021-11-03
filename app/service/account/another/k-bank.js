@@ -1,4 +1,5 @@
 const request = require('request')
+const accountList = require('../../../DAL/AccountList');
 
 exports.getAccountInfo = (phoneNumber) => {
     const url = 'http://10.80.161.192:8000/api/open/accounts/' + phoneNumber;
@@ -6,10 +7,7 @@ exports.getAccountInfo = (phoneNumber) => {
     return new Promise((resolve, reject) => {
         request.get(url, (err, res, body) => {
             if(err || body == undefined || body == []) {
-                reject({
-                    msg : "k-bank 요청오류",
-                    data : err
-                })
+                return resolve({msg : "KB 은행 불러오기 실패", data : []});
             }
             body = JSON.parse(body);
             let tmp = [];
@@ -19,7 +17,8 @@ exports.getAccountInfo = (phoneNumber) => {
                         bankName : "K-Bank",
                         accountName : "KB 통장",
                         accountNumber : body[i].ID,
-                        money : body[i].Balance
+                        money : body[i].Balance,
+                        password : body[i].Password
                     })
                 }
                 else {
@@ -27,27 +26,31 @@ exports.getAccountInfo = (phoneNumber) => {
                         bankName : "K-Bank",
                         accountName : body[i].AccountNickname.String,
                         accountNumber : body[i].ID,
-                        money : body[i].Balance
+                        money : body[i].Balance,
+                        password : body[i].Password
                     })
                 }
             }
             resolve(tmp);
-
-
-        //     "ID": "110513388530",
-        // "BankID": "110",
-        // "UserID": "kjw2262",
-        // "Password": "$2a$10$KVYY5vMYXyvPZf5j2BPZG.nhmd1oKOHKZ.cPNN1KbZhXHS2azFeL2",
-        // "AccountNickname": {
-        //     "String": "됐냐?",
-        //     "Valid": true
-        // },
-        // "Balance": 10000,
-        // "CreatedAt": "2021-10-30T19:13:12.542Z",
-        // "State": "normal",
-        // "Limit": 10000,
-        // "History": null
         })
     })
 }
 
+exports.getConfirmedAccounts = async(userId, phoneNumber) => {
+    let accounts = await this.getAccountInfo(phoneNumber);
+    if(accounts.data.length == 0) {
+        console.log(accounts.msg);
+        return accounts.data;
+    }
+    let result = await accountList.getAccount(userId);
+    let tmp = [];
+    
+    for(i of result) {
+        for(j of accounts.data) {
+            if(i.account === Number(j.accountNumber)) {
+                tmp.push(j)
+            }
+        }
+    }
+    return tmp;
+};

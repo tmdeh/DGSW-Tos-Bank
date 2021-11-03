@@ -7,35 +7,26 @@ const kBank = require('./another/k-bank');
 
 exports.allBankSearch = async(userId, res) => {
     try {
-        let result = [];
+        let data = [];
         let phoneNumber = await userSql.getWithId(userId);
         let tossAccounts = await tossBankSearch(userId);
-        // let daeguAccounts = await daegu.getConfirmedAccounts(userId,phoneNumber);
+        let kakaoAccounts = await kakao.getConfirmedAccounts(userId, phoneNumber);
+        let daeguAccounts = await daegu.getConfirmedAccounts(userId,phoneNumber);
+        let kBankAccounts = await kBank.getConfirmedAccounts(userId, phoneNumber);
+        
+        let accounts = [tossAccounts, kakaoAccounts, daeguAccounts, kBankAccounts];
 
-        result = createAccountsArr(tossAccounts, result)
-        // kakaoResult = await kakaoBankSearch(userId, phoneNumber);
+        for(account of accounts) {
+            data = createAccountsArr(account, data);
+        }
+        
+        // data = createAccountsArr(tossAccounts, result);
         res.status(200).json({
             msg : "OK",
-            result
+            data
         })
     } catch(e) {
-        res.status(400).json({
-            msg : e
-        })
-    }
-    
-}
-
-exports.allBankSearchtest = async(userId, res) => {
-    try {
-        let phoneNumber = await userSql.getWithId(userId);
-        tossResult = await tossBankSearch(userId);
-        kakaoResult = await kakaoBankSearch(userId, phoneNumber);
-        res.status(200).json({
-            msg : "OK",
-            tossResult
-        })
-    } catch(e) {
+        console.log(e)
         res.status(400).json({
             msg : e
         })
@@ -57,14 +48,6 @@ const tossBankSearch = async(userId) => {
     return result;
 }
 
-const kakaoBankSearch = async(userId, phoneNumber) => {
-    let kakaoResult = await kakao.getAccountInfo(phoneNumber);
-    
-}
-
-const daeguBankSearch = async(userId) => {
-
-}
 
 
 
@@ -78,13 +61,14 @@ exports.forAnotherBank = async(phoneNumber, res) => {
             return;
         }
         let array = [];
-        for(i in result) {
-            let tmp = {};
-            tmp.name = result[i].name;
-            tmp.money = result[i].money;
-            tmp.accountNumber = result[i].account_number;
-
-            array[i] = tmp;
+        
+        for(i of result) {
+            array.push({
+                name : i.name,
+                accountNumber : i.account_number,
+                money : i.money,
+                password : i.password
+            })
         }
 
         res.status(200).json(array)
@@ -100,7 +84,7 @@ exports.add = async(body, res) => {
         let phoneNumber = await userSql.getWithId(body.userId);
         let deaguAccouts = await daegu.getAccountInfo(phoneNumber);
         let kBankAccounts = await kBank.getAccountInfo(phoneNumber);
-        let kakaoAccounts = await kakao.getAccountInfo(phoneNumber)
+        let kakaoAccounts = await kakao.getAccountInfo(phoneNumber);
         let result = [];
         result = createAccountsArr(deaguAccouts, result);
         result = createAccountsArr(kBankAccounts, result);
@@ -115,8 +99,8 @@ exports.add = async(body, res) => {
 }
 
 const createAccountsArr = (Accounts, result) => {
-    for(i in Accounts) {
-        result.push(Accounts[i]);
+    for(i of Accounts) {
+        result.push(i);
     }
     return result
 }
