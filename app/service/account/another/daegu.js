@@ -2,7 +2,6 @@ const request = require('request');
 const accountList = require('../../../DAL/AccountList');
 exports.getAccountInfo = (phoneNumber) => {
     const url = 'http://10.80.163.17:8000/account/find/' + phoneNumber;
-    
     return new Promise((resolve, reject) => {
         request.get(url, (err, res, body) => {
             if(err || body.status == 400 || body == undefined) {

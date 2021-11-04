@@ -111,3 +111,10 @@ exports.selectPhoneNumber = async(phoneNumber) => {
     
     return result
 }
+
+exports.selectAccountNumber = async(accountNumber) => {
+    let sql = "SELECT account.account_number, user.name FROM account join user ON account.id = user.id WHERE account.account_number = ?;";
+    let result = await executeQuery.executePreparedStatement(sql, [accountNumber]);
+
+    return result[0];
+}

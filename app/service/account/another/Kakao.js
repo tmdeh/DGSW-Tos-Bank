@@ -29,7 +29,6 @@ exports.getAccountInfo = (phoneNumber) => {
 
 exports.getConfirmedAccounts = async(userId, phoneNumber) => {
     let accounts = await this.getAccountInfo(phoneNumber);
-    console.log(accounts.data.length);
     if(accounts.data.length == 0) {
         console.log(accounts.msg);
         return accounts.data;

@@ -20,7 +20,6 @@ exports.allBankSearch = async(userId, res) => {
             data = createAccountsArr(account, data);
         }
         
-        // data = createAccountsArr(tossAccounts, result);
         res.status(200).json({
             msg : "OK",
             data
@@ -73,6 +72,7 @@ exports.forAnotherBank = async(phoneNumber, res) => {
 
         res.status(200).json(array)
     }catch (e) {
+        console.log(e);
         res.status(400).json({
             msg : e
         })

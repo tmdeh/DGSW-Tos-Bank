@@ -3,7 +3,6 @@ const accountList = require('../../../DAL/AccountList');
 
 exports.getAccountInfo = (phoneNumber) => {
     const url = 'http://10.80.161.192:8000/api/open/accounts/' + phoneNumber;
-    
     return new Promise((resolve, reject) => {
         request.get(url, (err, res, body) => {
             if(err || body == undefined || body == []) {
@@ -11,40 +10,43 @@ exports.getAccountInfo = (phoneNumber) => {
             }
             body = JSON.parse(body);
             let tmp = [];
-            for(i in body) {
-                if(!body[i].AccountNickname.Valid) {
+            // console.log(body);
+            for(let i =0; i < body.accounts.length; i++) {
+                if(!body.accounts[i].account_nickname.Valid) {
                     tmp.push({
                         bankName : "K-Bank",
                         accountName : "KB 통장",
-                        accountNumber : body[i].ID,
-                        money : body[i].Balance,
-                        password : body[i].Password
+                        accountNumber : body.accounts[i].id,
+                        money : body.accounts[i].balance,
+                        password : body.accounts[i].password
                     })
                 }
                 else {
                     tmp.push({
                         bankName : "K-Bank",
-                        accountName : body[i].AccountNickname.String,
-                        accountNumber : body[i].ID,
-                        money : body[i].Balance,
-                        password : body[i].Password
+                        accountName : body.accounts[i].account_nickname.String,
+                        accountNumber : body.accounts[i].id,
+                        money : body.accounts[i].balance,
+                        password : body.accounts[i].password
                     })
                 }
             }
-            resolve(tmp);
+            // console.log(tmp);
+            resolve({msg : "OK", data : tmp});
         })
     })
 }
 
 exports.getConfirmedAccounts = async(userId, phoneNumber) => {
     let accounts = await this.getAccountInfo(phoneNumber);
+    console.log(accounts);
     if(accounts.data.length == 0) {
         console.log(accounts.msg);
         return accounts.data;
     }
     let result = await accountList.getAccount(userId);
     let tmp = [];
-    
+
     for(i of result) {
         for(j of accounts.data) {
             if(i.account === Number(j.accountNumber)) {
