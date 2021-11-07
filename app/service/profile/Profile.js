@@ -10,7 +10,7 @@ exports.get = async(body, res) => {
 
 exports.update = async(body, res, file) => {
     let result = await profileSql.updateUser(body, file);
-    res.status(201).json({
+    res.status(200).json({
         msg : result
     })
 }

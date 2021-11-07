@@ -7,7 +7,19 @@ const remittance = require('../service/account/remittance');
 const getAccount = require('../service/account/getAccount');
 var router = express.Router();
 
-
+/**
+ * @swagger
+ *  /account:
+ *    get:
+ *      tags:
+ *      - account
+ *      description: 계좌 조회
+ *      produces:
+ *      - application/json
+ *      responses:
+ *              200:
+ *                  description: 계좌 조회 성공
+ */
 router.get('/', decode, (req, res) => { //계좌 조회
     const userId = req.token.sub;
     Search.allBankSearch(userId, res)
@@ -35,7 +47,16 @@ router.patch('/money', decode, (req, res) => { //송금, 가져오기
     }
 })
 
-router.get('/account/:accountNumber', getAccount);
+/** 
+ * @swagger
+ * /account/search/{phoneNumber}:
+ *  get:
+ *   tags:
+ *    -account
+ *   description: 계좌번호로 계좌 조회
+ * 
+*/
+router.get('/search/:accountNumber', getAccount);
 
 router.patch('/', remittance);
 

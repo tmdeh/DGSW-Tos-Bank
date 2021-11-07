@@ -4,9 +4,14 @@ const accountList = require('../../../DAL/AccountList');
 exports.getAccountInfo = (phoneNumber) => {
     const url = 'http://10.80.161.192:8000/api/open/accounts/' + phoneNumber;
     return new Promise((resolve, reject) => {
+        setTimeout(() => {
+            resolve({msg : "KB 은행 불러오기 실패", data : []});
+            return;
+        }, 3000);
         request.get(url, (err, res, body) => {
             if(err || body == undefined || body == []) {
-                return resolve({msg : "KB 은행 불러오기 실패", data : []});
+                resolve({msg : "KB 은행 불러오기 실패", data : []});
+                return;
             }
             body = JSON.parse(body);
             let tmp = [];
@@ -39,7 +44,6 @@ exports.getAccountInfo = (phoneNumber) => {
 
 exports.getConfirmedAccounts = async(userId, phoneNumber) => {
     let accounts = await this.getAccountInfo(phoneNumber);
-    console.log(accounts);
     if(accounts.data.length == 0) {
         console.log(accounts.msg);
         return accounts.data;

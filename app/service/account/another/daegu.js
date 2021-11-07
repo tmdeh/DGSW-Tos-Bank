@@ -3,9 +3,15 @@ const accountList = require('../../../DAL/AccountList');
 exports.getAccountInfo = (phoneNumber) => {
     const url = 'http://10.80.163.17:8000/account/find/' + phoneNumber;
     return new Promise((resolve, reject) => {
+        setTimeout(() => {
+            console.log("sasdfaf")
+            resolve({msg : "daegu 은행 불러오기 실패", data : []});
+            return;
+        }, 3000);
         request.get(url, (err, res, body) => {
             if(err || body.status == 400 || body == undefined) {
-                return resolve({msg : "daegu 은행 불러오기 실패", data : []});
+                resolve({msg : "daegu 은행 불러오기 실패", data : []});
+                return;
             }
             body = JSON.parse(body);
             let result = {msg : "OK"};
@@ -27,6 +33,7 @@ exports.getAccountInfo = (phoneNumber) => {
 
 exports.getConfirmedAccounts = async(userId, phoneNumber) => {
     let accounts = await this.getAccountInfo(phoneNumber);
+    // console.log(accounts);
     if(accounts.data.length == 0) {
         console.log(accounts.msg);
         return accounts.data;

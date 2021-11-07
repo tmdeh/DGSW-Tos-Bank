@@ -5,7 +5,7 @@ const getAccount = async(req, res) => {
         const accountNumber = req.params.accountNumber;
         let result = await accountSql.selectAccountNumber(accountNumber);
         if(result === undefined) {
-            res.status(204).json({msg : "조회된 계좌가 없습니다."})
+            res.status(204).json();
         }
         res.status(200).json({
             msg : "OK",
@@ -15,7 +15,7 @@ const getAccount = async(req, res) => {
             }
         })
     } catch (e) {
-        res.status(400)
+        res.status(400).json()
     }
 }
 

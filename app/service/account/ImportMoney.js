@@ -20,7 +20,7 @@ exports.get = async(body, res) => {
         })
     }catch(e) {
         console.log(e);
-        res.status(401).json({
+        res.status(400).json({
             msg : e
         })
     }

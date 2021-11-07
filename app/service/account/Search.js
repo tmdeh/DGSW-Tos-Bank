@@ -13,7 +13,6 @@ exports.allBankSearch = async(userId, res) => {
         let kakaoAccounts = await kakao.getConfirmedAccounts(userId, phoneNumber);
         let daeguAccounts = await daegu.getConfirmedAccounts(userId,phoneNumber);
         let kBankAccounts = await kBank.getConfirmedAccounts(userId, phoneNumber);
-        
         let accounts = [tossAccounts, kakaoAccounts, daeguAccounts, kBankAccounts];
 
         for(account of accounts) {

@@ -5,9 +5,14 @@ exports.getAccountInfo = (phoneNumber) => {
     const url = 'http://10.80.162.195:8000/communication/' + phoneNumber;
     
     return new Promise((resolve, reject) => {
+        setTimeout(() => {
+            resolve({msg : "Kakao 은행 불러오기 실패", data : []});
+            return;
+        }, 3000);
         request.get(url, (err, res, body) => {
             if(err || body == undefined || body == []) {
-                return resolve({msg : "Kakao 은행 불러오기 실패", data : []});
+                resolve({msg : "Kakao 은행 불러오기 실패", data : []});
+                return;
             }
             let result = {msg : "OK"};
             let data = [];

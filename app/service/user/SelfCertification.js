@@ -7,7 +7,7 @@ exports.certification = async(body, res) => {
             msg : "OK"
         });
     }catch (e) {
-        res.status(401).json({
+        res.status(400).json({
             msg : e
         });
     }
