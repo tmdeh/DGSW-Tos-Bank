@@ -3,9 +3,11 @@ const decode = require('../middleware/tokenDecode');
 const setAccount = require('../service/account/Set')
 const Search = require('../service/account/Search');
 const importMoney = require('../service/account/importMoney');
-const remittance = require('../service/account/remittance');
 const getAccount = require('../service/account/getAccount');
-const accountPWCheck = require('../service/account/passwordCheck')
+const accountPWCheck = require('../service/account/passwordCheck');
+const deagu = require('../service/account/another/daegu');
+const kakao = require('../service/account/another/Kakao');
+const kBank = require('../service/account/another/k-bank');
  
 var router = express.Router();
 router.get('/', decode, (req, res) => { //계좌 조회
@@ -28,16 +30,30 @@ router.post('/confirm', decode, (req, res) => { //계좌 추가 확인
     setAccount.insert(req.body, res);
 })
 
-router.patch('/money', decode, (req, res) => { //송금, 가져오기
-    if(req.body.bankName == 'toss') { //가져오기
-        req.body.userId = req.token.sub;
+router.post('/money', decode, (req, res) => { //송금, 가져오기
+    req.body.userId = req.token.sub;
+    if(req.body.receiveBankName == 'toss') { //가져오기
         importMoney.get(req.body, res);
+    }
+    //송금
+    else if(req.body.receiveBankName == 'kakao') {
+        kakao.send(req.body, res);
+    }
+    else if(req.body.receiveBankName == 'deagu') {
+        deagu.send(req.body, res);
+    }
+    else if(req.body.receiveBankName == 'k-bank') {
+        kBank.send(req.body, res);
+    }
+    else {
+        res.status(400).json({
+            msg : "없는 은행 입니다.",
+            status: 400
+        })
     }
 })
 
-router.get('/account-number/:accountNumber', getAccount);
-
-router.patch('/', remittance);
+router.get('/account-number/:accountNumber', getAccount); //계좌 번호로 계좌 정보 가져오기
 
 
 router.delete('/',)

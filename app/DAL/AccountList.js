@@ -20,3 +20,9 @@ exports.insertList = async(body) => { //계좌 리스트에 추가
 
     await executeQuery.executePreparedStatement(sql, param);
 }
+
+exports.insertListNew = async(userId, number, password) => {
+    let sql = "INSERT INTO account_list(account, id, password) values(?,?,?)";
+    let param = [number, userId, password];
+    await executeQuery.executePreparedStatement(sql, param);
+}

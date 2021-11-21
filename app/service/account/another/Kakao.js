@@ -1,5 +1,6 @@
 const request = require('request')
 const accountList = require('../../../DAL/AccountList');
+const accountSql = require('../../../DAL/AccountSql');
 
 exports.getAccountInfo = (phoneNumber) => {
     const url = 'http://10.80.162.195:8000/communication/' + phoneNumber;
@@ -50,3 +51,27 @@ exports.getConfirmedAccounts = async(userId, phoneNumber) => {
     }
     return tmp;
 };
+
+exports.send = async(body, res) => {
+    //1. 있는 계좌인지 확인하기
+    //2. 계좌 비밀번호 확인하기
+    //3. 송금하기
+    try {
+        if(body.sendBankName === "toss") {
+            accountSql.getSalt(body.sendAccountNumber)
+        } else if(body.sendBankName === "kakao") {
+    
+        } else if(body.sendBankName === "deagu") {
+    
+        } else if(body.sendBankName === "k-bank") {
+    
+        } else {
+            throw "없는 은행입니다.";
+        }
+    } catch(e) {
+        res.status(400).json({
+            msg : e,
+            status: 400
+        })
+    }
+}

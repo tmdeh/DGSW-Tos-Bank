@@ -14,7 +14,8 @@ exports.insertAccount = async(body) => { //계좌 생성
     let sql = "INSERT INTO account(id, name, password, money, salt, account_number) values(?,?,?,?,?,?)";
     let param = [body.userId, body.name, body.password.password, 10000, body.password.salt, number];
     await executeQuery.executePreparedStatement(sql, param);
-    await accountList.insertList(body.userId, number, body.password.password);
+
+    await accountList.insertListNew(body.userId, number, body.password.password);
 }
 
 

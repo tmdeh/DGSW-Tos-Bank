@@ -8,6 +8,10 @@ exports.getAccountInfo = (phoneNumber) => {
             return;
         }, 3000);
         request.get(url, (err, res, body) => {
+            if(body == undefined) {
+                resolve({msg : "daegu 은행 불러오기 실패", data : []});
+                return;
+            }
             body = JSON.parse(body);
             if(err || body.status == 400 || body == undefined) {
                 resolve({msg : "daegu 은행 불러오기 실패", data : []});
@@ -54,3 +58,6 @@ exports.getConfirmedAccounts = async(userId, phoneNumber) => {
     }
     return tmp;
 };
+exports.send = (body, res) => {
+
+}

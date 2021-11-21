@@ -9,11 +9,16 @@ exports.getAccountInfo = (phoneNumber) => {
             return;
         }, 3000);
         request.get(url, (err, res, body) => {
+            // console.log(body);
+            body = JSON.parse(body);
             if(err || body == undefined || body == []) {
                 resolve({msg : "KB 은행 불러오기 실패", data : []});
                 return;
             }
-            body = JSON.parse(body);
+            if(body.msg == '계좌가 없습니다') {
+                resolve({msg : "KB 은행 계좌가 없습니다.", data: []});
+                return;
+            }
             let tmp = [];
             // console.log(body);
             for(let i =0; i < body.accounts.length; i++) {
@@ -60,3 +65,8 @@ exports.getConfirmedAccounts = async(userId, phoneNumber) => {
     }
     return tmp;
 };
+
+
+exports.send = (body, res) => {
+
+}
