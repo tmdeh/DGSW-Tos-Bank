@@ -8,6 +8,8 @@ const accountPWCheck = require('../service/account/passwordCheck');
 const deagu = require('../service/account/another/daegu');
 const kakao = require('../service/account/another/Kakao');
 const kBank = require('../service/account/another/k-bank');
+
+const exist = require('../service/account/exist');
  
 var router = express.Router();
 router.get('/', decode, (req, res) => { //계좌 조회
@@ -56,13 +58,13 @@ router.post('/money', decode, (req, res) => { //송금, 가져오기
 router.get('/account-number/:accountNumber', getAccount); //계좌 번호로 계좌 정보 가져오기
 
 
-router.delete('/',)
-
 router.get('/:phoneNumber', (req,res) => { //전화번호로 계좌리스트 가져오기
     const phoneNumber = req.params.phoneNumber;
     Search.forAnotherBank(phoneNumber, res);
 })
 
 router.post('/password-check', accountPWCheck); //비밀번호 확인
+
+router.get('/exist/:accountNumber', exist);
 
 module.exports = router;

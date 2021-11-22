@@ -9,7 +9,10 @@ exports.getAccountInfo = (phoneNumber) => {
             return;
         }, 3000);
         request.get(url, (err, res, body) => {
-            // console.log(body);
+            if(body == undefined) {
+                resolve({msg : "KB 은행 불러오기 실패", data : []});
+                return;
+            }
             body = JSON.parse(body);
             if(err || body == undefined || body == []) {
                 resolve({msg : "KB 은행 불러오기 실패", data : []});

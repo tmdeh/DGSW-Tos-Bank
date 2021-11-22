@@ -39,6 +39,10 @@ exports.getAccountInfo = (phoneNumber) => {
     })
 }
 
+exports.accountExistCheck = (accountNumber) => {
+    
+}
+
 exports.getConfirmedAccounts = async(userId, phoneNumber) => {
     let accounts = await this.getAccountInfo(phoneNumber);
     // console.log(accounts);

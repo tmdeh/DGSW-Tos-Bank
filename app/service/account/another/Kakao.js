@@ -33,6 +33,32 @@ exports.getAccountInfo = (phoneNumber) => {
     })
 }
 
+exports.accountExistCheck = (accountnUmber) => {
+    const url = 'http://10.80.162.195:8000/communication/check/accountNum/' + accountnUmber;
+    return new Promise((resolve, reject) => {
+        setTimeout(() => {
+            resolve({msg : "Kakao 은행 불러오기 실패", data : [], status: 400});
+            return;
+        }, 3000);
+        request.get(url, (err, res, body) => {
+            if(body == undefined) {
+                reject({msg : "Kakao 은행 불러오기 실패", data : [], satus: 400});
+                return;
+            }
+            body = JSON.parse(body);
+            // console.log(body);
+            if( body.message == '존재하지 않는 계좌') {
+                resolve({msg : "존재하지 않는 계좌", status:404});
+                return;
+            }
+            else if(body.message == '사용 가능') {
+                resolve({msg : "OK", status:200});
+                return;
+            }
+        })
+    })
+}
+
 exports.getConfirmedAccounts = async(userId, phoneNumber) => {
     let accounts = await this.getAccountInfo(phoneNumber);
     if(accounts.data.length == 0) {
@@ -58,9 +84,9 @@ exports.send = async(body, res) => {
     //3. 송금하기
     try {
         if(body.sendBankName === "toss") {
-            accountSql.getSalt(body.sendAccountNumber)
+            
         } else if(body.sendBankName === "kakao") {
-    
+
         } else if(body.sendBankName === "deagu") {
     
         } else if(body.sendBankName === "k-bank") {

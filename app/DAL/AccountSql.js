@@ -101,9 +101,16 @@ exports.isExistAccount = async(sendAccountNumber, receiveAccountNumber) => {
     }
 }
 
+exports.isExistAccount = async(singleAccountNumber) => {
+    let sql = "SELECT * FROM account WHERE account_number = ?";
+    let param = [singleAccountNumber];
 
-exports.delete = (accountNumber) => {
-
+    let result = await executeQuery.executePreparedStatement(sql, param);
+    if(result.length == 0) {
+        return false;
+    } else {
+        return true;
+    }
 }
 
 exports.selectPhoneNumber = async(phoneNumber) => {
