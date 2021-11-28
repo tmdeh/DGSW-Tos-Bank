@@ -40,7 +40,32 @@ exports.getAccountInfo = (phoneNumber) => {
 }
 
 exports.accountExistCheck = (accountNumber) => {
-    
+    const url = 'http://10.80.163.17:8000/account/find/account/' + accountNumber;
+    return new Promise((resolve, reject) => {
+        setTimeout(() => {
+            resolve({msg : "daegu 은행 불러오기 실패", status:400});
+            return;
+        }, 3000);
+        request.get(url, (err, res, body) => {
+            if(body == undefined) {
+                resolve({msg : "daegu 은행 불러오기 실패", status:400});
+                return;
+            }
+            body = JSON.parse(body);
+            console.log(body);
+
+            if(body.status == 200) {
+                resolve({msg : "OK", status:200});
+                return;
+            } else if(body.status == 404) {
+                resolve({msg : "존재하지 않는 계좌", status:400});
+                return;
+            } else {
+                resolve({msg : "deagu 은행 오류"})
+                return;
+            }
+        })
+    })
 }
 
 exports.getConfirmedAccounts = async(userId, phoneNumber) => {
@@ -63,5 +88,5 @@ exports.getConfirmedAccounts = async(userId, phoneNumber) => {
     return tmp;
 };
 exports.send = (body, res) => {
-
+    
 }

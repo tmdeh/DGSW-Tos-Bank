@@ -1,6 +1,7 @@
 const accountSql = require('../../DAL/AccountSql');
 const kakao = require('./another/Kakao');
-const deagu = require('./another/daegu')
+const deagu = require('./another/daegu');
+const kBank = require('./another/k-bank');
 
    // 장우 - 110 - kb
     // 승도 - 666 - toss
@@ -23,7 +24,7 @@ const exist = async(req, res) => {
                 throw result;
             }
         } else if(accountIdentify == '11') {
-
+            result = await kBank.accountExistCheck(accountNumber);
         } else if(accountIdentify == '10') {
             result  = await kakao.accountExistCheck(accountNumber);
         } else if(accountIdentify == '71') {

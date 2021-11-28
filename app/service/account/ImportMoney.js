@@ -6,7 +6,7 @@ exports.get = async(body, res) => {
         await accountSql.isExistAccount(body.sendAccountNumber, body.receiveAccountNumber); //계좌가 존재하는지 확인
         
         let salt = await accountSql.getSalt(body.sendAccountNumber); //salt 조회
-        let password = await encryption.resolveHashedPassword(salt,body.password); //salt로 암호화
+        let password = await encryption.resolveHashedPassword(salt,body.password);
         
         await accountSql.passwordCheck(body.sendAccountNumber, password); //비밀번호 확인
   

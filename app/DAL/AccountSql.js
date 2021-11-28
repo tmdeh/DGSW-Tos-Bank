@@ -126,3 +126,28 @@ exports.selectAccountNumber = async(accountNumber) => {
 
     return result[0];
 }
+
+
+exports.receiveMoney = async(accountNumber, money) => {
+    let sql = `SELECT money FROM account WHERE account_number = ?`;
+    let param = [accountNumber];
+
+    let result = await executeQuery.executePreparedStatement(sql, param);
+    money = parseInt(money);
+    result = parseInt(result[0].money);
+
+    money += result;
+
+    sql = `UPDATE account SET money = ? WHERE account_number = ?`;
+    param = [money, accountNumber];
+
+    await executeQuery.executePreparedStatement(sql, param);
+}
+
+exports.transactionInsert = async(sender, sendBank, receiver, receiveBank,money) => {
+    let sql = `INSERT INTO transaction(money, sender_bank, receiver_bank, sender_account, receiver_account) VALUES(?,?,?, ?, ?)`;
+    let param = [money, sendBank, receiveBank, sender, receiver];
+    console.log(param);
+
+    await executeQuery.executePreparedStatement(sql, param);
+}

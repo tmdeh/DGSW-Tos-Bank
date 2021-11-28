@@ -83,17 +83,7 @@ exports.send = async(body, res) => {
     //2. 계좌 비밀번호 확인하기
     //3. 송금하기
     try {
-        if(body.sendBankName === "toss") {
-            
-        } else if(body.sendBankName === "kakao") {
-
-        } else if(body.sendBankName === "deagu") {
-    
-        } else if(body.sendBankName === "k-bank") {
-    
-        } else {
-            throw "없는 은행입니다.";
-        }
+       
     } catch(e) {
         res.status(400).json({
             msg : e,

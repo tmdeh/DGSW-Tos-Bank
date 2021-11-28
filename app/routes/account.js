@@ -5,6 +5,8 @@ const Search = require('../service/account/Search');
 const importMoney = require('../service/account/importMoney');
 const getAccount = require('../service/account/getAccount');
 const accountPWCheck = require('../service/account/passwordCheck');
+const receive = require('../service/account/receive');
+const send = require('../service/account/send')
 const deagu = require('../service/account/another/daegu');
 const kakao = require('../service/account/another/Kakao');
 const kBank = require('../service/account/another/k-bank');
@@ -37,7 +39,6 @@ router.post('/money', decode, (req, res) => { //송금, 가져오기
     if(req.body.receiveBankName == 'toss') { //가져오기
         importMoney.get(req.body, res);
     }
-    //송금
     else if(req.body.receiveBankName == 'kakao') {
         kakao.send(req.body, res);
     }
@@ -62,6 +63,10 @@ router.get('/:phoneNumber', (req,res) => { //전화번호로 계좌리스트 가
     const phoneNumber = req.params.phoneNumber;
     Search.forAnotherBank(phoneNumber, res);
 })
+
+router.post('/receive', receive); //송금 받기
+
+router.post('/send', send);
 
 router.post('/password-check', accountPWCheck); //비밀번호 확인
 

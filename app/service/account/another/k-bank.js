@@ -50,6 +50,31 @@ exports.getAccountInfo = (phoneNumber) => {
     })
 }
 
+exports.accountExistCheck = async(accountNumber) => {
+    const url = 'http://10.80.161.192:8000/api/open/accounts?account_id=' + accountNumber;
+    return new Promise((resolve, reject) => {
+        setTimeout(() => {
+            resolve({msg : "KB 은행 불러오기 실패", data : []});
+            return;
+        }, 3000);
+        request.get(url, (err, res, body) => {
+            if(body === undefined) {
+                resolve({msg : "KB 은행 불러오기 실패", data : []});
+                return;
+            }
+            body = JSON.parse(body);
+            if(body.account_id == accountNumber) {
+                resolve({msg : "OK", status:200});
+                return;
+            } 
+            else if(body.msg == '해당하는 계좌가 없습니다') {
+                resolve({msg : "존재하지 않는 계좌", status:400})
+                return;
+            }
+        })
+    })
+}
+
 exports.getConfirmedAccounts = async(userId, phoneNumber) => {
     let accounts = await this.getAccountInfo(phoneNumber);
     if(accounts.data.length == 0) {
@@ -71,5 +96,12 @@ exports.getConfirmedAccounts = async(userId, phoneNumber) => {
 
 
 exports.send = (body, res) => {
-
+    try {
+        
+    } catch (error) {
+        console.log(error)
+        res.status(400).json({
+            msg : error
+        })
+    }
 }
