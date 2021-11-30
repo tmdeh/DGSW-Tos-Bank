@@ -12,6 +12,9 @@ const kakao = require('../service/account/another/Kakao');
 const kBank = require('../service/account/another/k-bank');
 
 const exist = require('../service/account/exist');
+const passwordCheck = require('../service/account/accountPwCheck');
+const reduceMoney = require('../service/account/reduceMoney');
+const accountSql = require('../DAL/AccountSql');
  
 var router = express.Router();
 router.get('/', decode, (req, res) => { //계좌 조회
@@ -34,25 +37,62 @@ router.post('/confirm', decode, (req, res) => { //계좌 추가 확인
     setAccount.insert(req.body, res);
 })
 
-router.post('/money', decode, (req, res) => { //송금, 가져오기
+router.post('/money', decode, async(req, res) => { //송금, 가져오기
     req.body.userId = req.token.sub;
-    if(req.body.receiveBankName == 'toss') { //가져오기
-        importMoney.get(req.body, res);
-    }
-    else if(req.body.receiveBankName == 'kakao') {
-        kakao.send(req.body, res);
-    }
-    else if(req.body.receiveBankName == 'deagu') {
-        deagu.send(req.body, res);
-    }
-    else if(req.body.receiveBankName == 'k-bank') {
-        kBank.send(req.body, res);
-    }
-    else {
-        res.status(400).json({
-            msg : "없는 은행 입니다.",
-            status: 400
-        })
+    const sendBankName = req.body.sendBankName;
+    const receiveBankName = req.body.receiveBankName;
+    const sendAccountNumber = req.body.sendAccountNumber;
+    const receiveAccountNumber = req.body.receiveAccountNumber;
+    const reqPassword = req.body.password
+    const money = req.body.money;
+    try {
+        let result = {};
+        if(sendBankName == 'toss') { //toss => 타은행
+            await passwordCheck(sendAccountNumber, reqPassword); //비밀번호 확인
+            if(receiveBankName == 'toss') { //가져오기
+                importMoney.get(req.body);
+            }
+            if(receiveBankName == 'kakao') {
+                //toss => kakao
+                let commission = await reduceMoney(sendAccountNumber, money);
+                result = await kakao.send(sendAccountNumber, receiveAccountNumber, money);
+                result.commission = commission;
+            }
+            else if(receiveBankName == 'deagu') {
+                //toss => deagu
+                commission = await reduceMoney(sendAccountNumber, money);
+                result = await deagu.send(sendAccountNumber, receiveAccountNumber, money);
+                result.commission = commission;
+            }
+            else if(receiveBankName == 'k-bank') {
+                kBank.send(req.body, res);
+            } else {
+                throw {
+                    msg : "없는 은행입니다.",
+                    status: 400
+                }
+            }
+        } else if(sendBankName == "kakao") {
+            
+        } else if(sendBankName == "deague") {
+            //deagu => kakao
+            //대구 은행에 request할 때 비밀번호 필요e
+    
+        } else if(sendBankName == "k-bank") {
+    
+        }
+        else {
+            throw {
+                msg : "없는 은행입니다",
+                status: 400
+            }
+        }
+        // sender, sendBank, receiver, receiveBank, money
+        await accountSql.transactionInsert(sendAccountNumber, "toss", receiveAccountNumber, receiveBankName, money);
+        res.status(200).json(result);
+    } catch (error) {
+        console.log(error);
+        res.status(400).json(error)
     }
 })
 
@@ -66,7 +106,7 @@ router.get('/:phoneNumber', (req,res) => { //전화번호로 계좌리스트 가
 
 router.post('/receive', receive); //송금 받기
 
-router.post('/send', send);
+router.post('/send', send.send);
 
 router.post('/password-check', accountPWCheck); //비밀번호 확인
 

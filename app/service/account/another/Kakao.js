@@ -24,7 +24,7 @@ exports.getAccountInfo = (phoneNumber) => {
                     accountName : body[i].nickname,
                     accountNumber : body[i].accountNumber,
                     money : body[i].money,
-                    password : body[i].password
+                    password : body[i].password,
                 })
             }
             result.data = data;
@@ -78,16 +78,32 @@ exports.getConfirmedAccounts = async(userId, phoneNumber) => {
     return tmp;
 };
 
-exports.send = async(body, res) => {
-    //1. 있는 계좌인지 확인하기
-    //2. 계좌 비밀번호 확인하기
-    //3. 송금하기
-    try {
-       
-    } catch(e) {
-        res.status(400).json({
-            msg : e,
-            status: 400
-        })
+exports.send = async(send, receive, money) => {
+    const name = await accountSql.getAccountUserName(send);
+    const option = {
+        uri : "http://10.80.162.195:8000/communication/deposit",
+        method : 'PATCH',
+        body : {
+            accountNumber : receive,
+            money : money,
+            name : name
+        },
+        json : true,
     }
+    return new Promise((resolve, reject) => {
+        setTimeout(() => {
+            reject({msg : "kakao 은행 불러오기 실패", status:400});
+            return;
+        }, 3000);
+
+        request.patch(option, (err, res, body) => {
+            // console.log(body);
+            if(body == undefined) {
+                reject({msg : "kakao 은행 불러오기 실패", status:400});
+            }
+            if(body.status == 200) {
+                resolve({msg : "OK", status:200})
+            }
+        })
+    })
 }

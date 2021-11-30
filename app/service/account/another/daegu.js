@@ -1,7 +1,7 @@
 const request = require('request');
 const accountList = require('../../../DAL/AccountList');
 exports.getAccountInfo = (phoneNumber) => {
-    const url = 'http://10.80.163.17:8000/account/find/' + phoneNumber;
+    const url = 'http://10.80.163.17:8000/account/find/phone/' + phoneNumber;
     return new Promise((resolve, reject) => {
         setTimeout(() => {
             resolve({msg : "daegu 은행 불러오기 실패", data : []});
@@ -21,16 +21,15 @@ exports.getAccountInfo = (phoneNumber) => {
                 resolve({msg : "daegu 은행 검색 결과가 없습니다.", data : []})
                 return
             }
-            console.log(body.status)
             let result = {msg : "OK"};
             let data = [];
-            for(i in body.data.account) {
+            for(i in body.data) {
                 data.push({
                     bankName : "daegu",
-                    accountName : body.data.account[i].name,
-                    accountNumber : body.data.account[i].accountNum,
-                    money : body.data.account[i].pay,
-                    password : body.data.account[i].password
+                    accountName : body.data[i].name,
+                    accountNumber : body.data[i].accountNum,
+                    money : body.data[i].pay,
+                    password : body.data[i].password
                 });
             }
             result.data = data;
@@ -52,7 +51,7 @@ exports.accountExistCheck = (accountNumber) => {
                 return;
             }
             body = JSON.parse(body);
-            console.log(body);
+            // console.log(body);
 
             if(body.status == 200) {
                 resolve({msg : "OK", status:200});
@@ -87,6 +86,41 @@ exports.getConfirmedAccounts = async(userId, phoneNumber) => {
     }
     return tmp;
 };
-exports.send = (body, res) => {
-    
+exports.send = (sendAccountNumber, receiveAccountNumber, money) => {
+    const option = {
+        uri : "http://10.80.163.17:8000/account/transacation/receive",
+        method: 'POST',
+        form : {
+            sendAccountNum : sendAccountNumber,
+            receiveAccountNum : receiveAccountNumber,
+            receivePay : money
+        }
+    }
+    return new Promise((resolve, reject) => {
+        setTimeout(() => {
+            reject({msg : "daegu 은행 불러오기 실패", status:400});
+            return;
+        }, 3000);
+        request.post(option, (err, res, body) => {
+            if(body == undefined) {
+                reject({msg : "daegu 은행 불러오기 실패", status:400});
+                return;
+            }
+            body = JSON.parse(body);
+            // console.log(body);
+
+            if(body.status == 200) {
+                resolve({msg : "OK", status:200});
+                return;
+            } else if(body.status == 404) {
+                reject({msg : "존재하지 않는 계좌", status:400});
+                return;
+            } else {
+                reject({msg : "deagu 은행 오류"})
+                return;
+            }
+        })
+
+
+    })
 }

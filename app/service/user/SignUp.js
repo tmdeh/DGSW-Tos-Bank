@@ -5,6 +5,7 @@ const encryption = require('./auth/Encryption')
 
 exports.signUp = async(body, file, res) => {
     try{
+        console.log(body);
         signUpCheck.signUpCheck(body) //id, password 체크
         await signUpCheck.phoneNumberDuplicateCHeck(body.phoneNumber);
         let pw = await encryption.createHashedPassword(body.password);

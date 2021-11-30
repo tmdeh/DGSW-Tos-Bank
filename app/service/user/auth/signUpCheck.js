@@ -8,6 +8,7 @@ exports.signUpCheck = function(body) {
     }
 
     if(body.id == undefined || body.id.length < 3 || body.id.length > 12){
+        console.log(body.id);
         throw "아이디가 너무 길거나 짧습니다.";
     }
 

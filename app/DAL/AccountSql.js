@@ -135,19 +135,32 @@ exports.receiveMoney = async(accountNumber, money) => {
     let result = await executeQuery.executePreparedStatement(sql, param);
     money = parseInt(money);
     result = parseInt(result[0].money);
-
-    money += result;
-
+    let commission = money / 10;
+    money += result - commission;
+    if(money < 0) {
+        throw{
+            msg : "잔액이 부족합니다.",
+            commission : -commission,
+            status: 400
+        }
+    }
     sql = `UPDATE account SET money = ? WHERE account_number = ?`;
     param = [money, accountNumber];
 
     await executeQuery.executePreparedStatement(sql, param);
+    return -commission;
 }
 
-exports.transactionInsert = async(sender, sendBank, receiver, receiveBank,money) => {
+exports.transactionInsert = async(sender, sendBank, receiver, receiveBank, money) => {
     let sql = `INSERT INTO transaction(money, sender_bank, receiver_bank, sender_account, receiver_account) VALUES(?,?,?, ?, ?)`;
     let param = [money, sendBank, receiveBank, sender, receiver];
-    console.log(param);
+    // console.log(param);
 
     await executeQuery.executePreparedStatement(sql, param);
+}
+
+exports.getAccountUserName = async(accountNumber) => {
+    let sql = `SELECT user.name FROM user  left join account on account.id = user.id WHERE account.account_number = ?;`;
+    let result = await executeQuery.executePreparedStatement(sql, [accountNumber]);
+    return result[0].name;
 }
