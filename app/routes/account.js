@@ -18,6 +18,7 @@ const accountSql = require('../DAL/AccountSql');
  
 var router = express.Router();
 router.get('/', decode, (req, res) => { //계좌 조회
+    // console.log(req.headers);
     const userId = req.token.sub;
     Search.allBankSearch(userId, res)
 })
@@ -50,9 +51,9 @@ router.post('/money', decode, async(req, res) => { //송금, 가져오기
         if(sendBankName == 'toss') { //toss => 타은행
             await passwordCheck(sendAccountNumber, reqPassword); //비밀번호 확인
             if(receiveBankName == 'toss') { //가져오기
-                importMoney.get(req.body);
+                result = await importMoney.get(req.body);
             }
-            if(receiveBankName == 'kakao') {
+            else if(receiveBankName == 'kakao') {
                 //toss => kakao
                 let commission = await reduceMoney(sendAccountNumber, money);
                 result = await kakao.send(sendAccountNumber, receiveAccountNumber, money);

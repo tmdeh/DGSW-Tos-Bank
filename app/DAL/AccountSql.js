@@ -37,7 +37,6 @@ exports.getSalt = async(sendAccountNumber) => {
 exports.accountUpdate = async(sendAccountNumber, receiveAccountNumber, money) => {
     let sql = "SELECT money FROM account WHERE account_number = ? OR account_number = ?";
     let param = [sendAccountNumber, receiveAccountNumber];
-
     let result = await executeQuery.executePreparedStatement(sql, param);
     
     if(isNaN(money)) { //보낼 돈이 숫자인지 아닌지
@@ -45,20 +44,18 @@ exports.accountUpdate = async(sendAccountNumber, receiveAccountNumber, money) =>
     }
 
     money = parseInt(money);
-
+    
     if(result[0].money < money) { //금액 잔액 확인
         throw "계좌의 금액이 부족합니다."
     }
-
+    
     
     const sender = result[0].money - money;
     const receiver = result[1].money + money;
-
+    
     sql  = "UPDATE account SET money = ? WHERE account_number = ?";
     await executeQuery.executePreparedStatement(sql, [sender, sendAccountNumber]);
     await executeQuery.executePreparedStatement(sql, [receiver, receiveAccountNumber]);
-
-    return;
 }
 
 
@@ -73,12 +70,6 @@ exports.passwordCheck = async(sendAccountNumber, password) => {
     }
 
     return;
-}
-
-exports.transactionInsert = async(body) => {
-    let sql = "INSERT INTO transaction(receiver, sender, money, sender_bank, receiver_bank, sender_account, receiver_account) VALUES(?,?,?,'toss','toss', ?, ?)";
-    let param = [body.userId, body.userId, body.money, body.sendAccountNumber, body.receiveAccountNumber];
-    await executeQuery.executePreparedStatement(sql, param);
 }
 
 exports.isExistAccount = async(sendAccountNumber, receiveAccountNumber) => {
