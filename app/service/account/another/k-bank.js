@@ -1,5 +1,6 @@
 const request = require('request')
 const accountList = require('../../../DAL/AccountList');
+const accountSql = require('../../../DAL/AccountSql');
 
 exports.getAccountInfo = (phoneNumber) => {
     const url = 'http://10.80.161.192:8000/api/open/accounts/' + phoneNumber;
@@ -95,13 +96,38 @@ exports.getConfirmedAccounts = async(userId, phoneNumber) => {
 };
 
 
-exports.send = (body, res) => {
-    try {
-        
-    } catch (error) {
-        console.log(error)
-        res.status(400).json({
-            msg : error
-        })
+exports.send = async(send, receive, money) => {
+    const name = await accountSql.getAccountUserName(send);
+    const option = {
+        uri : "10.80.161.192:8000/api/banking/deposit",
+        method : 'POST',
+        body : {
+            sender : {
+                bank_id : 666,
+                account_id : send,
+                name : name
+            },
+            receiver : {
+                account_id : receive
+            },
+            amount : money
+        },
+        json : true,
     }
+    return new Promise((resolve, reject) => {
+        setTimeout(() => {
+            reject({msg : "k-Bank 은행 불러오기 실패", status:400});
+            return;
+        }, 3000);
+
+        request.patch(option, (err, res, body) => {
+            // console.log(body);
+            if(body == undefined) {
+                reject({msg : "k-Bank 은행 불러오기 실패", status:400});
+            }
+            if(body.status == 200) {
+                resolve({msg : "OK", status:200})
+            }
+        })
+    })
 }

@@ -61,12 +61,15 @@ router.post('/money', decode, async(req, res) => { //송금, 가져오기
             }
             else if(receiveBankName == 'deagu') {
                 //toss => deagu
-                commission = await reduceMoney(sendAccountNumber, money);
+                let commission = await reduceMoney(sendAccountNumber, money);
                 result = await deagu.send(sendAccountNumber, receiveAccountNumber, money);
                 result.commission = commission;
             }
             else if(receiveBankName == 'k-bank') {
-                kBank.send(req.body, res);
+                //toss => k-bank
+                let commission = await reduceMoney(sendAccountNumber, money);
+                result = await kBank.send(sendAccountNumber, receiveAccountNumber, money);
+                result.commission = commission;
             } else {
                 throw {
                     msg : "없는 은행입니다.",
